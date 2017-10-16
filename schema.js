@@ -56,7 +56,13 @@ const BookType = new GraphQLObjectType({
         type: new GraphQLList(BookType),
         resolve: (xml, args, context) => {
           const ids = xml.GoodreadsResponse.author[0].books[0].book.map(elem => elem.id[0]._)
-          return context.bookLoader.loadMany(ids)
+          console.log('ids are', ids)
+          return Promise.all(ids.map(id => 
+            fetch(`https://www.goodreads.com/book/show/${id}.xml?key=${process.env.GOODREADS_APIKEY}`)
+            .then(response => response.text()
+            .then(parseXML)
+          )))
+          // return context.bookLoader.loadMany(ids)
         }
       }
     })
@@ -74,7 +80,7 @@ const BookType = new GraphQLObjectType({
             id: { type: GraphQLInt }
           },      
           resolve: (root, args, context) => 
-            fetch(`https://www.goodreads.com/author/show.xml?id=${args.id}&key=PLLctUbSIRJGsVLi7sIcg`)
+            fetch(`https://www.goodreads.com/author/show.xml?id=${args.id}&key=${process.env.GOODREADS_APIKEY}`)
           .then(response => response.text())
           .then(parseXML)
         }

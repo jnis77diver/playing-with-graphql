@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const graphqlHTTP = require('express-graphql')
 const app = express()
@@ -7,13 +8,15 @@ const DataLoader = require('dataloader')
 const util = require('util')
 const parseXML = util.promisify(require('xml2js').parseString)
 
+console.log(process.env.GOODREADS_APIKEY)
+
 const fetchAuthor = id =>
-fetch(`https://www.goodreads.com/author/show.xml?id=${id}&key=Rz607gLuIzr1a55wEbl3w `)
+fetch(`https://www.goodreads.com/author/show.xml?id=${id}&key=${process.env.GOODREADS_APIKEY}`)
 .then(response => response.text())
 .then(parseXML)
 
 const fetchBook = id =>
-fetch(`https://www.goodreads.com/book/show.xml?id=${id}&key=Rz607gLuIzr1a55wEbl3w`)
+fetch(`https://www.goodreads.com/book/show/${id}.xml?key=${process.env.GOODREADS_APIKEY}`)
   .then(response => response.text())
   .then(parseXML)
 
